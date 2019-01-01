@@ -7,20 +7,20 @@ namespace Banking_Renamer
 {
     class Program
     {
-        public const string RootBankingFolder = "Banking";
+        //public const string RootBankingFolder = "Banking";
 
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
 
-            var rootDirectory = Directory.GetCurrentDirectory();
+            //var rootDirectory = Directory.GetCurrentDirectory();
+            var rootDirectory = args[0];
 
             // Scotia
             var files = Directory.GetFiles(rootDirectory, "*e-Statement*.pdf", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 string directoryName = Path.GetDirectoryName(file);
-                var arrDirectories = directoryName.Split('\\').ToList();
 
                 StringBuilder newName = new StringBuilder();
                 var currentNameNoExt = Path.GetFileNameWithoutExtension(file);
@@ -29,13 +29,6 @@ namespace Banking_Renamer
 
                 newName.Append(date.ToString("yyyy-MM MMMM"));
 
-                var bankingIndex = arrDirectories.FindLastIndex(s => s.Equals(RootBankingFolder, StringComparison.CurrentCultureIgnoreCase));
-                // /**/Banking/Scotia/Chequing/
-                if (bankingIndex == arrDirectories.Count - 3)
-                {
-                    newName.Append($" {arrDirectories[arrDirectories.Count - 2]} {arrDirectories[arrDirectories.Count - 1]}");
-                }
-
                 // Rebuild path
                 newName.Append(Path.GetExtension(file));
                 var newFile = Path.Combine(directoryName, newName.ToString());
@@ -43,16 +36,29 @@ namespace Banking_Renamer
                 {
                     File.Move(file, newFile);
                 }
-                catch (PathTooLongException)
+                catch (PathTooLongException e)
                 {
-                    //
+                    Console.WriteLine(e);
                 }
                 catch (DirectoryNotFoundException)
                 {
+                    try
+                    {
+                        Directory.CreateDirectory(Path.GetDirectoryName(newFile));
+                        File.Move(file, newFile);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
                 }
-                catch (IOException)
+                catch (IOException e)
                 {
-
+                    Console.WriteLine(e);
                 }
                 catch (Exception e)
                 {
