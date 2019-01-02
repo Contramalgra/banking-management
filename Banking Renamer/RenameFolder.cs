@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,13 +15,12 @@ namespace Banking_Renamer
             rootDirectory = directory;
         }
 
-        public void RenameBankFiles(string oldValue)
-        {
-            RenameBankFiles(oldValue, $"*{oldValue}*.pdf", DateTime.Parse);
-        }
+        public void RenameBankFiles(string oldValue) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", DateTime.Parse);
+        public void RenameBankFiles(string oldValue, Func<string, DateTime> dateParseFunc) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", dateParseFunc);
         public void RenameBankFiles(string regex, string searchPattern, Func<string, DateTime> dateParseFunc)
         {
             var files = Directory.GetFiles(rootDirectory, searchPattern, SearchOption.AllDirectories);
+            files = files.Where(x => Regex.IsMatch(x, regex)).ToArray();
             foreach (var file in files)
             {
                 var trimmedName = Regex.Replace(Path.GetFileNameWithoutExtension(file), regex, string.Empty).Trim();
@@ -34,6 +34,10 @@ namespace Banking_Renamer
                 var newFile = Path.Combine(Path.GetDirectoryName(file), newName.ToString());
                 try
                 {
+                    Console.WriteLine(!Path.GetDirectoryName(file).Equals(Path.GetDirectoryName(newFile))
+                        ? $"{file}\t->{newFile}"
+                        : $"{Path.GetFileName(file)} -> {Path.GetFileName(newFile)}");
+
                     File.Move(file, newFile);
                 }
                 catch (PathTooLongException e)
