@@ -7,6 +7,8 @@ namespace Banking_Renamer
     {
         private const string SearchString_Scotia = "e-Statement";
         private const string SearchString_Tangerine = "Tangerine-Chequing_";
+        private const string SearchString_CoastCapital = @"statement-\d+-";
+
         //public const string RootBankingFolder = "Banking";
 
         static void Main(string[] args)
@@ -19,7 +21,7 @@ namespace Banking_Renamer
 
             try
             {
-                rf.RenameBankFilesRecursivelyExact(SearchString_Scotia);
+                rf.RenameBankFiles(SearchString_Scotia);
             }
             catch (Exception e)
             {
@@ -29,7 +31,20 @@ namespace Banking_Renamer
             try
             {
                 var anonymousFunction = new Func<string, DateTime>(s => DateTime.ParseExact(s, "MMMyy", CultureInfo.CurrentCulture));
-                rf.RenameBankFilesRecursivelyExact(SearchString_Tangerine, $"*{SearchString_Tangerine}*.pdf", anonymousFunction);
+                rf.RenameBankFiles(SearchString_Tangerine, anonymousFunction);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            try
+            {
+                rf.RenameBankFiles(
+                    SearchString_CoastCapital,
+                    "*.pdf",
+                    s => DateTime.ParseExact(s, "yyMMMdd", CultureInfo.CurrentCulture)
+                );
             }
             catch (Exception e)
             {
