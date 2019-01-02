@@ -1,12 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 
 namespace Banking_Renamer
 {
     class Program
     {
+        private const string SearchString_Scotia = "e-Statement";
+        private const string SearchString_Tangerine = "Tangerine-Chequing_";
         //public const string RootBankingFolder = "Banking";
 
         static void Main(string[] args)
@@ -15,56 +15,28 @@ namespace Banking_Renamer
 
             //var rootDirectory = Directory.GetCurrentDirectory();
             var rootDirectory = args[0];
+            var rf = new Renamer(rootDirectory);
 
-            // Scotia
-            var files = Directory.GetFiles(rootDirectory, "*e-Statement*.pdf", SearchOption.AllDirectories);
-            foreach (var file in files)
+            try
             {
-                string directoryName = Path.GetDirectoryName(file);
+                rf.RenameBankFilesRecursivelyExact(SearchString_Scotia);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
 
-                StringBuilder newName = new StringBuilder();
-                var currentNameNoExt = Path.GetFileNameWithoutExtension(file);
-                var trimmedName = currentNameNoExt.Replace("e-Statement", string.Empty).Trim();
-                var date = DateTime.Parse(trimmedName);
-
-                newName.Append(date.ToString("yyyy-MM MMMM"));
-
-                // Rebuild path
-                newName.Append(Path.GetExtension(file));
-                var newFile = Path.Combine(directoryName, newName.ToString());
-                try
-                {
-                    File.Move(file, newFile);
-                }
-                catch (PathTooLongException e)
-                {
-                    Console.WriteLine(e);
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    try
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(newFile));
-                        File.Move(file, newFile);
-                    }
-                    catch (IOException e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                }
-                catch (IOException e)
-                {
-                    Console.WriteLine(e);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+            try
+            {
+                var anonymousFunction = new Func<string, DateTime>(s => DateTime.ParseExact(s, "MMMyy", CultureInfo.CurrentCulture));
+                rf.RenameBankFilesRecursivelyExact(SearchString_Tangerine, $"*{SearchString_Tangerine}*.pdf", anonymousFunction);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
+
+        
     }
 }
