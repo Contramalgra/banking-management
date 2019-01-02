@@ -16,40 +16,51 @@ namespace Banking_Renamer
         }
 
         public void RenameBankFiles(string oldValue) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", DateTime.Parse);
-        public void RenameBankFiles(string oldValue, Func<string, DateTime> dateParseFunc) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", dateParseFunc);
-        public void RenameBankFiles(string regex, string searchPattern, Func<string, DateTime> dateParseFunc)
+        public void RenameBankFiles(string oldValue, Func<string, DateTime> dateParseFunc, bool showDay = false) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", dateParseFunc, showDay);
+        public void RenameBankFiles(string regex, string searchPattern, Func<string, DateTime> dateParseFunc, bool showDay = false)
         {
-            var files = Directory.GetFiles(rootDirectory, searchPattern, SearchOption.AllDirectories);
-            files = files.Where(x => Regex.IsMatch(x, regex)).ToArray();
-            foreach (var file in files)
+            try
             {
-                var trimmedName = Regex.Replace(Path.GetFileNameWithoutExtension(file), regex, string.Empty).Trim();
-                var date = dateParseFunc(trimmedName);
-
-                StringBuilder newName = new StringBuilder();
-                newName.Append(date.ToString("yyyy-MM MMMM"));
-
-                // Rebuild path
-                newName.Append(Path.GetExtension(file));
-                var newFile = Path.Combine(Path.GetDirectoryName(file), newName.ToString());
-                try
+                var files = Directory.GetFiles(rootDirectory, searchPattern, SearchOption.AllDirectories);
+                files = files.Where(x => Regex.IsMatch(x, regex)).ToArray();
+                foreach (var file in files)
                 {
-                    Console.WriteLine(!Path.GetDirectoryName(file).Equals(Path.GetDirectoryName(newFile))
-                        ? $"{file}\t->{newFile}"
-                        : $"{Path.GetFileName(file)} -> {Path.GetFileName(newFile)}");
+                    var trimmedName = Regex.Replace(Path.GetFileNameWithoutExtension(file), regex, string.Empty).Trim();
+                    var date = dateParseFunc(trimmedName);
 
-                    File.Move(file, newFile);
-                }
-                catch (PathTooLongException e)
-                {
-                    Console.WriteLine(e);
-                }
-                catch (DirectoryNotFoundException)
-                {
+                    StringBuilder newName = new StringBuilder();
+                    newName.Append(showDay ? date.ToString("yyyy-MM-dd MMMM") : date.ToString("yyyy-MM MMMM"));
+
+                    // Rebuild path
+                    newName.Append(Path.GetExtension(file));
+                    var newFile = Path.Combine(Path.GetDirectoryName(file), newName.ToString());
                     try
                     {
-                        Directory.CreateDirectory(Path.GetDirectoryName(newFile));
+                        Console.WriteLine(!Path.GetDirectoryName(file).Equals(Path.GetDirectoryName(newFile))
+                            ? $"{file}\t->{newFile}"
+                            : $"{Path.GetFileName(file)} -> {Path.GetFileName(newFile)}");
+
                         File.Move(file, newFile);
+                    }
+                    catch (PathTooLongException e)
+                    {
+                        Console.WriteLine(e);
+                    }
+                    catch (DirectoryNotFoundException)
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(newFile));
+                            File.Move(file, newFile);
+                        }
+                        catch (IOException e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
                     }
                     catch (IOException e)
                     {
@@ -60,14 +71,10 @@ namespace Banking_Renamer
                         Console.WriteLine(e);
                     }
                 }
-                catch (IOException e)
-                {
-                    Console.WriteLine(e);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
             }
         }
     }
