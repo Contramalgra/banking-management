@@ -14,16 +14,25 @@ namespace Banking_Renamer
 
         //public const string RootBankingFolder = "Banking";
 
+        private static void PrintHeader()
+        {
+            Console.WriteLine(@" _____ _ _        ____                                      ");
+            Console.WriteLine(@"|  ___(_) | ___  |  _ \ ___ _ __   __ _ _ __ ___   ___ _ __ ");
+            Console.WriteLine(@"| |_  | | |/ _ \ | |_) / _ \ '_ \ / _` | '_ ` _ \ / _ \ '__|");
+            Console.WriteLine(@"|  _| | | |  __/ |  _ <  __/ | | | (_| | | | | | |  __/ |   ");
+            Console.WriteLine(@"|_|   |_|_|\___| |_| \_\___|_| |_|\__,_|_| |_| |_|\___|_|   ");
+            Console.WriteLine();
+        }
+        
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            PrintHeader();
+            var rootDirectory = args.Length > 0 && System.IO.Directory.Exists(args[0]) ? args[0] : System.IO.Directory.GetCurrentDirectory();
 
-            //var rootDirectory = Directory.GetCurrentDirectory();
-            var rootDirectory = args[0];
             var rf = new Renamer(rootDirectory);
-            
+
             rf.RenameBankFiles(SearchString_Scotia);
-            
+
             var anonymousFunction = new Func<string, DateTime>(s => DateTime.ParseExact(s, "MMMyy", CultureInfo.CurrentCulture));
             rf.RenameBankFiles(SearchString_Tangerine, anonymousFunction);
 
