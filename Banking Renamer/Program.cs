@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 
 namespace Banking_Renamer
@@ -10,6 +10,7 @@ namespace Banking_Renamer
         private const string SearchString_CoastCapital = @"statement-\d+-";
         private const string SearchString_BMO = "eStatement_";
         private const string SearchString_RBC = @"[\dX]+-\w{8,9}-";
+        private const string SearchString_Brim = @"statement-\w{32}-";
 
         //public const string RootBankingFolder = "Banking";
 
@@ -36,6 +37,13 @@ namespace Banking_Renamer
 
             rf.RenameBankFiles(SearchString_RBC, "*.pdf", DateTime.Parse, true);
             
+            rf.RenameBankFiles(
+                SearchString_Brim,
+                @"Brim\statement-*.pdf",
+                s => DateTime.ParseExact(s, "yyyyMMdd", CultureInfo.CurrentCulture),
+                true
+            );
+
         }
     }
 }
