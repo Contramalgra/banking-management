@@ -35,8 +35,8 @@ namespace Banking_Renamer
 
             rf.RenameBankFiles(SearchString_BMO, s => DateTime.ParseExact(s, "yyyy-MM-dd", CultureInfo.CurrentCulture), true);
 
-            rf.RenameBankFiles(SearchString_RBC, "*.pdf", DateTime.Parse, true);
-            
+            // rf.RenameBankFiles(SearchString_RBC, @"RBC\*.pdf", DateTime.Parse, true);
+
             rf.RenameBankFiles(
                 SearchString_Brim,
                 @"Brim\statement-*.pdf",
