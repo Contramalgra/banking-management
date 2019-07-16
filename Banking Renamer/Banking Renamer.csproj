@@ -6,4 +6,8 @@
     <RootNamespace>Banking_Renamer</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="DateParsers\" />
+  </ItemGroup>
+
 </Project>
