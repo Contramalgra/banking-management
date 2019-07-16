@@ -11,6 +11,7 @@ namespace Banking_Renamer
         private const string SearchString_BMO = "eStatement_";
         private const string SearchString_RBC = @"[\dX]+-\w{8,9}-";
         private const string SearchString_Brim = @"statement-\w{32}-";
+        //private const string SearchString_CIBC = @"CIBC\";
 
         //public const string RootBankingFolder = "Banking";
 
@@ -53,6 +54,11 @@ namespace Banking_Renamer
                 true
             );
 
+            rf.RenameBankFiles(
+                "", //@"^[^-]*$",
+                @"CIBC\*.pdf",
+                s => DateTime.Parse(s)
+            );
         }
     }
 }
