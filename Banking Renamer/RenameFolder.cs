@@ -10,11 +10,10 @@ namespace Banking_Renamer
     {
         private readonly string rootDirectory;
 
-        public Renamer(string directory)
-        {
-            rootDirectory = directory;
-        }
+        public Renamer(string directory) => rootDirectory = directory;
 
+        //public void RenameBankFiles(IFileFinder finder, bool showDay = false) => RenameBankFiles(finder.SearchRegex, new Func<string, DateTime>(s => finder.GetDateParser().Parse(s)), showDay);
+        public void RenameBankFiles(IFileFinder finder, bool showDay = false) => RenameBankFiles(finder.SearchRegex, finder.SearchPattern, new Func<string, DateTime>(s => finder.GetDateParser().Parse(s)), showDay);
         public void RenameBankFiles(string oldValue) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", DateTime.Parse);
         public void RenameBankFiles(string oldValue, Func<string, DateTime> dateParseFunc, bool showDay = false) => RenameBankFiles(oldValue, $"*{oldValue}*.pdf", dateParseFunc, showDay);
         public void RenameBankFiles(string regex, string searchPattern, Func<string, DateTime> dateParseFunc, bool showDay = false)
