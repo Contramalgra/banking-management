@@ -5,7 +5,8 @@ namespace Banking_Renamer.Banks
 {
     class GenericBank : Bank
     {
-        public GenericBank(string subfolder) : base(@"^[^-]*$", $@"{subfolder}\*.pdf")
+        //public GenericBank(string subfolder) : base(@"^[^-]*$", $@"{subfolder}\*.pdf")
+        public GenericBank(string subfolder) : base("", $@"{subfolder}\*.pdf")
         {
         }
 
